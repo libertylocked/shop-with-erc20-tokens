@@ -111,7 +111,7 @@ contract Shop is ERC20RecipientInterface {
     /// i.e. the client should call `approve` on the token contract with sufficient value,
     /// before calling `buyWithToken` on shop.
     /// This function can either be called directly by the buyer (after giving allowance),
-    /// or be called from `receiveApproval`. So we can't assume `msg.sender` is the buyer.
+    /// or be called from `receiveApproval` by the token contract.
     /// @param _buyer The buyer who gave us allowance
     /// @param _value The allowance stated by the buyer. Should not be trusted.
     /// @param _token The address of the token
@@ -121,6 +121,7 @@ contract Shop is ERC20RecipientInterface {
         requireProductInStock(id)
         returns (bool)
     {
+        require(msg.sender == _buyer || msg.sender == _token);
         // get the price when buying with this token
         uint price = products[id].price[_token];
         // check if this token is accepted
@@ -154,10 +155,10 @@ contract Shop is ERC20RecipientInterface {
         returns (bool)
     {
         // somehow convert extra data to 1 uint256
-        require(_extraData.length >= 32);
+        // require(_extraData.length >= 32);
         // XXX: How do we decode the extra data?
-        buyWithTokens(_from, _value, _token, 0);
-        return true;
+        // return buyWithTokens(_from, _value, _token, 0);
+        return false;
     }
     
     // ====================
